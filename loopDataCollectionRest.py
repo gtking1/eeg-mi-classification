@@ -27,7 +27,7 @@ class Graph:
         self.closed_segments = 0
         self.session_time = datetime.datetime.now().strftime("%m_%d_%H_%M")
 
-        self.eyes_open = True
+        self.eyes_open = 0
         self.num_each_seg = 12 # 12
 
         #_ = self.board_shim.get_board_data()
@@ -38,21 +38,26 @@ class Graph:
                 labels = np.full((1, data.shape[1]), self.eyes_open)
                 data = np.concatenate((data, labels), axis=0)
                 DataFilter.write_file(data, f'{self.session_time}.csv', 'a')  # use 'a' for append mode
-                self.eyes_open = not self.eyes_open
-                if self.eyes_open:
+                self.eyes_open += 1
+                if self.eyes_open == 4:
+                    self.eyes_open = 0
+                if self.eyes_open == 0:
                     playsound('./beep.mp3', block=False)
-                    print("Open eyes")
+                    print("Clench right fist")
                     self.closed_segments += 1
-                else:
+                elif self.eyes_open == 2:
                     playsound('./beep.mp3', block=False)
-                    print("Close eyes")
+                    print("Clench left fist")
                     self.open_segments += 1
-                print("Rest")
-                time.sleep(3)
-                print(self.board_shim.get_board_data_count())
-                data = self.board_shim.get_board_data()
-                print(self.board_shim.get_board_data_count())
-                playsound('./beep.mp3', block=False)
+                elif self.eyes_open == 1 or self.eyes_open == 3:
+                    playsound('./beep.mp3', block=False)
+                    print("Rest")
+                    # time.sleep(3)
+                    # print(self.board_shim.get_board_data_count())
+                    # data = self.board_shim.get_board_data()
+                    # print(self.board_shim.get_board_data_count())
+
+
             if ((self.open_segments == self.closed_segments) and self.open_segments == self.num_each_seg) == True:
                 print("Ending data collection")
                 time.sleep(3)
@@ -109,7 +114,7 @@ def main():
     try:
         board_shim.prepare_session()
         board_shim.start_stream(450000, args.streamer_params) # 450000 is number of samples in ring buffer
-        print("In 5 seconds, prepare to hold eyes open for 10 seconds")
+        print("In 5 seconds, prepare to clench right fist for 10 seconds")
         time.sleep(5)
         playsound('./beep.mp3', block=False)
         print("Starting recording")

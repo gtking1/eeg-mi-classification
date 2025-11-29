@@ -1,7 +1,8 @@
-finaltrainmodel.pt
+*.pt
 label_tensors.pt
 val_label_tensors.pt
 val_window_tensors.pt
 window_tensors.pt
 valloss.png
 *.csv
+oldMLCleanup.ipynb
